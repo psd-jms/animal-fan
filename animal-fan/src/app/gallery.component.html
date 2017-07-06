@@ -1,0 +1,8 @@
+<p>This is the gallery</p>
+<ul class="gallery">
+    <li *ngFor="let img of images"
+        (click)="onSelect(img)">
+        <img src="{{img.url}}" />
+        <p>{{img.caption}}</p>
+    </li>
+</ul>
