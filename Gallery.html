@@ -156,7 +156,7 @@
         <!-- Intro Content -->
         <div class="row">
             <div class="col-lg-6">
-                <form onsubmit="UploadToImgur()" method="post" enctype="multipart/form-data">
+                <form id="uploadForm">
                     <div class="form-group">
                         <label for="captionInput">Image caption</label>
                         <input type="text" class="form-control" id="captionInput" aria-describedby="captionHelp" maxlength="100">
@@ -196,30 +196,29 @@
     <script src="js/bootstrap.min.js"></script>
 
     <script>
-        function UploadToImgur() {
-            var formData = new FormData();
-            formData.append("image", $("[name='uploads[]']")[0].files[0]);
-            $.ajax({
-                url: "https://api.imgur.com/3/upload",
-                type: "POST",
-                datatype: "json",
-                //headers: { "Authorization": "Client-ID 07b4bbe7dc080944ae8b7a7a28c4f7534247febb" },
-                data: { image: imgfile },
-                success: showMe,
-                error: showMe,
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Client-ID ea454d4bce18064");
-                }
-            });
+
+$("#uploadForm").submit(function(){
+
+    var formData = $(this).serialize();
+
+    $.ajax({
+        url: "https://api.imgur.com/3/upload",
+        type: "POST",
+        datatype: "json",
+        data: {image: formData},
+        success: function (data) {
+            alert(data)
+        },
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Client-ID ea454d4bce18064");
         }
+    });
+
+    return false;
+});
 
 
-        function showMe(data) {
-                $("body").append(JSON.stringify(data));
-                if (data.success == true) {
-                    $("body").append("<img src='" + data.data.link + "'/>");
-                }
-            }
+
     </script>
 
 </body>
