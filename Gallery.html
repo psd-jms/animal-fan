@@ -164,8 +164,21 @@
                         <input type="file" class="form-control-file" id="imageInputFile" aria-describedby="fileHelp" accept="image/jpg, image/jpeg, image/png, image/gif">
                         <small id="fileHelp" class="form-text text-muted">Please select an image you want to upload from your harddrive.</small>
                     </div>
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button type="submit" class="btn btn-primary" id="submitButton">Upload</button>
                 </form>
+                <br/>
+                <div class="alert alert-warning" style="display: none" id="progressMessage">
+                    Upload in progress...
+                </div>
+                <div class="alert alert-success" style="display: none" id="successMessage">
+                    Upload successful: <a href=""></a>
+                </div>
+                <div class="alert alert-danger" style="display: none" id="errorMessage">
+                    Upload failed, please try again
+                </div>
+                <div class="alert alert-warning" style="display: none" id="warningMessage">
+                    Please provide a caption and a file to upload
+                </div>
             </div>
            
             <!--<p>Uploading...</p>
@@ -194,26 +207,65 @@
 
     <script>
 
-$("#uploadForm").submit(function(){
+    $("#uploadForm").submit(function () {
 
-    var file = document.getElementById('imageInputFile').files[0];
+        var file = $('#imageInputFile')[0].files[0];
+        var caption = $('#captionInput').val();
 
-    $.ajax({ 
-        url: 'https://api.imgur.com/3/image',
-        headers: {
-            'Authorization': 'Client-ID ea454d4bce18064'
-        },
-        type: 'POST',
-        data: {
-            'image': file
-        },
-        processData: false,
-        success: function(response) { console.log(response); }
+        if (file == undefined || caption == undefined) {
+            $('#warningMessage').show();
+
+        } else {
+            setUploadInProgress();
+
+            var formData = new FormData();
+            formData.append("image", file);
+            formData.append("title", caption);
+
+            $.ajax({
+                url: 'https://api.imgur.com/3/image',
+                headers: {
+                    'Authorization': 'Client-ID ea454d4bce18064'
+                },
+                data: formData,
+                type: 'POST',
+                datatype: 'json',
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    setUploadFinished();
+
+                    $('#successMessage').show();
+
+                    $('#successMessage a').text(response.data.title);
+                    $('#successMessage a').prop('href', response.data.link);
+                },
+                error: function (response) {
+                    setUploadFinished();
+                    
+                    $('#errorMessage').show();
+                }
+            });
+        }
+
+        return false;
     });
 
-    return false;
-});
+    function setUploadInProgress() {
+        $('#warningMessage').hide();
+        $('#progressMessage').show();
+        $('#imageInputFile').attr('disabled', 'disabled');
+        $('#captionInput').attr('disabled', 'disabled');
+        $('#submitButton').attr('disabled', 'disabled');
+    }
 
+    function setUploadFinished() {
+        $('#progressMessage').hide();
+        $('#imageInputFile').removeAttr('disabled');
+        $('#captionInput').removeAttr('disabled');
+        $('#submitButton').removeAttr('disabled');
+    }
 
 
     </script>
