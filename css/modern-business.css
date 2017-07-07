@@ -13,6 +13,16 @@ body {
 
 body {
     padding-top: 50px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+    background: url('http://icon-park.com/imagefiles/leopard_print.png');
+    color: khaki;
+}
+
+a, .text-muted, small {
+    color: white;
+}
+
+p, a {
+    font-size: 140%;
 }
 
 .img-portfolio {
