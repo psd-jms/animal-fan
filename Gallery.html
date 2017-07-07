@@ -214,7 +214,6 @@
 
         if (file == undefined || caption == undefined) {
             $('#warningMessage').show();
-
         } else {
             setUploadInProgress();
 
@@ -234,17 +233,16 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    setUploadFinished();
-
                     $('#successMessage').show();
 
                     $('#successMessage a').text(response.data.title);
                     $('#successMessage a').prop('href', response.data.link);
                 },
                 error: function (response) {
-                    setUploadFinished();
-                    
                     $('#errorMessage').show();
+                },
+                complete: function() {
+                    setUploadFinished();
                 }
             });
         }
@@ -252,21 +250,28 @@
         return false;
     });
 
+    /*
+     * Shows progress message and disables all inputs.
+     */
     function setUploadInProgress() {
         $('#warningMessage').hide();
         $('#progressMessage').show();
+        
         $('#imageInputFile').attr('disabled', 'disabled');
         $('#captionInput').attr('disabled', 'disabled');
         $('#submitButton').attr('disabled', 'disabled');
     }
 
+    /*
+     * Hides progress message and enables all inputs.
+     */
     function setUploadFinished() {
         $('#progressMessage').hide();
+
         $('#imageInputFile').removeAttr('disabled');
         $('#captionInput').removeAttr('disabled');
         $('#submitButton').removeAttr('disabled');
     }
-
 
     </script>
 
