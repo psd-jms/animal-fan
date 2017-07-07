@@ -77,9 +77,6 @@
                             <li>
                                 <a href="popular.html">Popular References</a>
                             </li>
-                            <li>
-                                <a href="facts.html">Facts</a>
-                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -156,7 +153,7 @@
         <!-- Intro Content -->
         <div class="row">
             <div class="col-lg-6">
-                <form onsubmit="UploadToImgur()" method="post" enctype="multipart/form-data">
+                <form id="uploadForm">
                     <div class="form-group">
                         <label for="captionInput">Image caption</label>
                         <input type="text" class="form-control" id="captionInput" aria-describedby="captionHelp" maxlength="100">
@@ -164,7 +161,7 @@
                     </div>
                     <div class="form-group">
                         <label for="imageInputFile">Image file</label>
-                        <input type="file" class="form-control-file" id="imageInputFile" aria-describedby="fileHelp" onchange="upload(this.files[0])">
+                        <input type="file" class="form-control-file" id="imageInputFile" aria-describedby="fileHelp" accept="image/jpg, image/jpeg, image/png, image/gif">
                         <small id="fileHelp" class="form-text text-muted">Please select an image you want to upload from your harddrive.</small>
                     </div>
                     <button type="submit" class="btn btn-primary">Upload</button>
@@ -196,30 +193,29 @@
     <script src="js/bootstrap.min.js"></script>
 
     <script>
-        function UploadToImgur() {
-            var formData = new FormData();
-            formData.append("image", $("[name='uploads[]']")[0].files[0]);
-            $.ajax({
-                url: "https://api.imgur.com/3/upload",
-                type: "POST",
-                datatype: "json",
-                //headers: { "Authorization": "Client-ID 07b4bbe7dc080944ae8b7a7a28c4f7534247febb" },
-                data: { image: imgfile },
-                success: showMe,
-                error: showMe,
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Client-ID ea454d4bce18064");
-                }
-            });
-        }
+
+$("#uploadForm").submit(function(){
+
+    var file = document.getElementById('imageInputFile').files[0];
+
+    $.ajax({ 
+        url: 'https://api.imgur.com/3/image',
+        headers: {
+            'Authorization': 'Client-ID ea454d4bce18064'
+        },
+        type: 'POST',
+        data: {
+            'image': file
+        },
+        processData: false,
+        success: function(response) { console.log(response); }
+    });
+
+    return false;
+});
 
 
-        function showMe(data) {
-                $("body").append(JSON.stringify(data));
-                if (data.success == true) {
-                    $("body").append("<img src='" + data.data.link + "'/>");
-                }
-            }
+
     </script>
 
 </body>
